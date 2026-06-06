@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上大学投资回报率测试</title>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --card: #ffffff;
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --primary-light: #eef2ff;
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border: #e8e5df;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --shadow: 0 4px 24px rgba(0,0,0,.06);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,.08);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: .25s cubic-bezier(.4,0,.2,1);
+    --font: "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Container ── */
+  .app {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 32px;
+    transition: opacity var(--transition), transform var(--transition);
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 28px 20px; }
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    padding-bottom: 8px;
+  }
+  .header .icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .header .subtitle {
+    font-size: 15px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  /* ── Progress ── */
+  .progress-wrap {
+    padding: 0 0 20px;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .progress-bar {
+    height: 6px;
+    background: #e8e5df;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #818cf8, var(--primary));
+    border-radius: 99px;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ── Question ── */
+  .question-text {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+  @media (max-width: 480px) {
+    .question-text { font-size: 16px; }
+  }
+
+  /* ── Options ── */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--card);
+    user-select: none;
+  }
+  .option:hover {
+    border-color: #c7d2fe;
+    background: #fafafe;
+  }
+  .option.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .option .radio {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+  }
+  .option.selected .radio {
+    border-color: var(--primary);
+    background: var(--primary);
+  }
+  .option.selected .radio::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+  }
+  .option .label {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .option .letter {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-muted);
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .option.selected .letter {
+    color: var(--primary);
+  }
+
+  /* ── Nav ── */
+  .nav {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .btn {
+    flex: 1;
+    padding: 13px 24px;
+    border-radius: 99px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition);
+    font-family: var(--font);
+    text-align: center;
+    letter-spacing: .02em;
+  }
+  .btn-prev {
+    background: #f1f5f9;
+    color: var(--text-secondary);
+    flex: 0 0 auto;
+  }
+  .btn-prev:hover { background: #e2e8f0; }
+  .btn-prev:disabled { opacity: 0; pointer-events: none; }
+  .btn-next {
+    background: var(--primary);
+    color: #fff;
+    flex: 1;
+  }
+  .btn-next:hover { background: var(--primary-hover); }
+  .btn-next:disabled {
+    opacity: .35;
+    pointer-events: none;
+  }
+  .btn-start {
+    background: var(--primary);
+    color: #fff;
+    padding: 16px 40px;
+    font-size: 17px;
+    width: 100%;
+  }
+  .btn-start:hover { background: var(--primary-hover); }
+  .btn-restart {
+    background: #f1f5f9;
+    color: var(--text);
+    padding: 13px 32px;
+    font-size: 14px;
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-restart:hover { background: #e2e8f0; }
+
+  /* ── Intro ── */
+  .intro .desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .intro .meta {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .intro .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    background: #f8fafc;
+    padding: 8px 14px;
+    border-radius: 99px;
+  }
+
+  /* ── Result ── */
+  .result { text-align: center; }
+  .result .level {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: .02em;
+  }
+  .result .verdict {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    max-width: 420px;
+    margin: 0 auto 32px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition);
+  }
+  .footer a:hover { color: var(--primary-hover); }
+  .footer .divider { margin: 0 8px; color: #d1d5db; }
+
+  /* ── Fade ── */
+  .fade-enter { animation: fadeIn .35s ease both; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Levels ── */
+  .level-a { color: #059669; }
+  .level-b { color: #2563eb; }
+  .level-c { color: #d97706; }
+  .level-d { color: #ea580c; }
+  .level-e { color: #dc2626; }
+
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- dynamically rendered -->
+</div>
+
+<footer class="footer">
+  © 2026 · 作者 <a href="https://space.bilibili.com/4988790" target="_blank" rel="noopener">ez661</a>
+  <span class="divider">|</span> 本测试仅供娱乐参考
+</footer>
+
+<script>
+(function() {
+  const questions = [
+    {
+      q: '1. 你能接受和3个以上陌生人同住一间宿舍吗？',
+      options: [
+        { letter: 'A', text: '完全接受，甚至喜欢热闹', score: 4 },
+        { letter: 'B', text: '可以接受，无所谓', score: 3 },
+        { letter: 'C', text: '勉强忍受，但会不舒服', score: 2 },
+        { letter: 'D', text: '很难接受，严重影响心情', score: 1 },
+        { letter: 'E', text: '绝对不能，这会让我崩溃', score: 0 },
+      ]
+    },
+    {
+      q: '2. 如果宿舍条件很差（如没空调、拥挤），你是否有经济能力到校外租房/合租改善环境？',
+      options: [
+        { letter: 'A', text: '完全可以轻松负担', score: 4 },
+        { letter: 'B', text: '可以负担合租', score: 3 },
+        { letter: 'C', text: '有些吃力，但能挤出来', score: 2 },
+        { letter: 'D', text: '很难负担', score: 1 },
+        { letter: 'E', text: '完全没有额外资金', score: 0 },
+      ]
+    },
+    {
+      q: '3. 如果你决定不上大学，你的父母会是什么态度？',
+      options: [
+        { letter: 'A', text: '强烈反对，会不断施压指责', score: 4 },
+        { letter: 'B', text: '会失望并试图说服我', score: 3 },
+        { letter: 'C', text: '尊重我的决定但略感遗憾', score: 2 },
+        { letter: 'D', text: '比较无所谓', score: 1 },
+        { letter: 'E', text: '他们本来就支持我不上大学', score: 0 },
+      ]
+    },
+    {
+      q: '4. 如果不上大学直接工作或创业，你觉得自己比同龄大学毕业生赚到更多钱的可能性有多大？',
+      options: [
+        { letter: 'A', text: '完全不可能，收入会低很多', score: 4 },
+        { letter: 'B', text: '不太可能，大学文凭很重要', score: 3 },
+        { letter: 'C', text: '不确定，一半一半', score: 2 },
+        { letter: 'D', text: '有可能，我能力比较强', score: 1 },
+        { letter: 'E', text: '几乎肯定能赚得更多', score: 0 },
+      ]
+    },
+    {
+      q: '5. 如果没有期末考试、没有学分压力，你还会主动学习专业课程吗？',
+      options: [
+        { letter: 'A', text: '一定会，我天生爱学习', score: 4 },
+        { letter: 'B', text: '可能会学自己感兴趣的', score: 3 },
+        { letter: 'C', text: '很少，需要外力推动', score: 2 },
+        { letter: 'D', text: '基本不会，会彻底躺平', score: 1 },
+        { letter: 'E', text: '绝对不会，学习只为考试', score: 0 },
+      ]
+    },
+    {
+      q: '6. 对于大学里早上八点的课，你的感受是？',
+      options: [
+        { letter: 'A', text: '毫无压力，习惯早起', score: 4 },
+        { letter: 'B', text: '可以接受，偶尔困', score: 3 },
+        { letter: 'C', text: '经常觉得痛苦，能逃就逃', score: 2 },
+        { letter: 'D', text: '非常抗拒，几乎不去', score: 1 },
+        { letter: 'E', text: '因为早八，我宁愿不上大学', score: 0 },
+      ]
+    },
+    {
+      q: '7. 当老师照本宣科、讲课枯燥时，你通常会？',
+      options: [
+        { letter: 'A', text: '仍然认真听，记笔记', score: 4 },
+        { letter: 'B', text: '边听边干自己的事', score: 3 },
+        { letter: 'C', text: '直接翘课去自学', score: 2 },
+        { letter: 'D', text: '感到烦躁但只能坐着', score: 1 },
+        { letter: 'E', text: '会因此对整个大学教育失望', score: 0 },
+      ]
+    },
+    {
+      q: '8. 你更倾向于通过哪种方式学习新知识？',
+      options: [
+        { letter: 'A', text: '线下课堂，与老师同学互动', score: 4 },
+        { letter: 'B', text: '线上线下结合', score: 3 },
+        { letter: 'C', text: '纯线上视频/教程自学', score: 2 },
+        { letter: 'D', text: '直接通过AI问答学习', score: 1 },
+        { letter: 'E', text: '不喜欢任何形式的学习', score: 0 },
+      ]
+    },
+    {
+      q: '9. 你对"将作业交给AI完成"的态度是？',
+      options: [
+        { letter: 'A', text: '坚决反对，必须自己思考完成', score: 4 },
+        { letter: 'B', text: '可以辅助但核心自己写', score: 3 },
+        { letter: 'C', text: '经常用AI生成再修改', score: 2 },
+        { letter: 'D', text: '几乎都交给AI，自己复制粘贴', score: 1 },
+        { letter: 'E', text: '觉得作业毫无意义，交不交无所谓', score: 0 },
+      ]
+    },
+    {
+      q: '10. 你是否担心大学里学的专业知识毕业时已经过时？',
+      options: [
+        { letter: 'A', text: '不担心，基础永不过时', score: 4 },
+        { letter: 'B', text: '有点担心，但相信学校体系', score: 3 },
+        { letter: 'C', text: '很担心，很多课程老旧', score: 2 },
+        { letter: 'D', text: '非常担心，觉得大部分用不上', score: 1 },
+        { letter: 'E', text: '无所谓，反正不指望学到什么', score: 0 },
+      ]
+    },
+    {
+      q: '11. 对于"把学生集中到同一间教室上课"的模式，你认为在互联网时代：',
+      options: [
+        { letter: 'A', text: '仍然非常必要，无法替代', score: 4 },
+        { letter: 'B', text: '有一定必要，但需改革', score: 3 },
+        { letter: 'C', text: '基本不必要，线上可取代', score: 2 },
+        { letter: 'D', text: '完全过时，浪费生命', score: 1 },
+        { letter: 'E', text: '我无所谓', score: 0 },
+      ]
+    },
+    {
+      q: '12. 假如大学宿舍条件极好（舒适、独立空间），你更可能：',
+      options: [
+        { letter: 'A', text: '学习更带劲，不辜负环境', score: 4 },
+        { letter: 'B', text: '按部就班，影响不大', score: 3 },
+        { letter: 'C', text: '容易变懒，拖延增加', score: 2 },
+        { letter: 'D', text: '彻底躺平，丧失动力', score: 1 },
+        { letter: 'E', text: '好环境坏环境我都躺平', score: 0 },
+      ]
+    },
+    {
+      q: '13. 不上大学的话，你是否有很想去做的事情（如学手艺、打工旅行、创业等）？',
+      options: [
+        { letter: 'A', text: '完全没想法，不知道干嘛', score: 4 },
+        { letter: 'B', text: '有一些模糊的方向', score: 3 },
+        { letter: 'C', text: '有比较清晰的计划', score: 2 },
+        { letter: 'D', text: '有明确且可立即行动的人生路径', score: 1 },
+        { letter: 'E', text: '已经有收入可观的事业在等我', score: 0 },
+      ]
+    },
+    {
+      q: '14. 你多大程度上相信"不上大学就没有好前途"？',
+      options: [
+        { letter: 'A', text: '完全相信，这是社会现实', score: 4 },
+        { letter: 'B', text: '比较相信，大学是基本门槛', score: 3 },
+        { letter: 'C', text: '半信半疑，看个人', score: 2 },
+        { letter: 'D', text: '不太信，很多没上大学的也成功', score: 1 },
+        { letter: 'E', text: '完全不信，能力比文凭重要', score: 0 },
+      ]
+    },
+    {
+      q: '15. 你觉得大学学费加上住宿费这笔花费：',
+      options: [
+        { letter: 'A', text: '非常值，稳赚不赔的投资', score: 4 },
+        { letter: 'B', text: '还可以，换来学历值得', score: 3 },
+        { letter: 'C', text: '有点贵，但只能硬着头皮', score: 2 },
+        { letter: 'D', text: '性价比很低，划不来', score: 1 },
+        { letter: 'E', text: '纯属浪费钱', score: 0 },
+      ]
+    },
+    {
+      q: '16. 大学里各种强制参加的讲座、活动、填表，你的态度是？',
+      options: [
+        { letter: 'A', text: '很积极，都能学到东西', score: 4 },
+        { letter: 'B', text: '理解，偶尔参加', score: 3 },
+        { letter: 'C', text: '觉得烦，尽量逃避', score: 2 },
+        { letter: 'D', text: '完全排斥，认为浪费时间', score: 1 },
+        { letter: 'E', text: '直接无视，绝不参加', score: 0 },
+      ]
+    },
+    {
+      q: '17. 如果让你重新选择，你更可能：',
+      options: [
+        { letter: 'A', text: '毫不犹豫上大学', score: 4 },
+        { letter: 'B', text: '还是会选上大学', score: 3 },
+        { letter: 'C', text: '可能会试试其他路径', score: 2 },
+        { letter: 'D', text: '很可能不上大学', score: 1 },
+        { letter: 'E', text: '绝对不上大学', score: 0 },
+      ]
+    },
+    {
+      q: '18. 你对自己未来的职业规划清晰度如何？',
+      options: [
+        { letter: 'A', text: '非常清晰，需要大学专业支撑', score: 4 },
+        { letter: 'B', text: '比较清晰，大学提供基础', score: 3 },
+        { letter: 'C', text: '不太清晰，走一步看一步', score: 2 },
+        { letter: 'D', text: '很模糊，上大学是为了拖延选择', score: 1 },
+        { letter: 'E', text: '无规划，纯粹随大流', score: 0 },
+      ]
+    },
+    {
+      q: '19. 你认为自己属于哪种学习者？',
+      options: [
+        { letter: 'A', text: '需要老师督促和课堂氛围', score: 4 },
+        { letter: 'B', text: '可以混合式学习', score: 3 },
+        { letter: 'C', text: '偏自学，但需要文凭', score: 2 },
+        { letter: 'D', text: '完全自学型，不需要学校', score: 1 },
+        { letter: 'E', text: '任何形式都不学，就想玩', score: 0 },
+      ]
+    },
+    {
+      q: '20. 对"大学唯一的意义是让我确认自己不需要大学"这种说法，你：',
+      options: [
+        { letter: 'A', text: '完全不同意，大学很有意义', score: 4 },
+        { letter: 'B', text: '部分不同意', score: 3 },
+        { letter: 'C', text: '有同感但觉得仍有价值', score: 2 },
+        { letter: 'D', text: '很认同，我就是这么想的', score: 1 },
+        { letter: 'E', text: '完全共鸣，这就是我', score: 0 },
+      ]
+    },
+  ];
+
+  const TOTAL = questions.length;
+  const MAX_SCORE = TOTAL * 4; // 80
+
+  const resultLevels = [
+    { min: 90, max: 100, level: '超值投资', cls: 'a', emoji: '📈',
+      desc: '大学就是为你量身打造的成长加速器，能收获知识、人脉和文凭，投入产出比极高。' },
+    { min: 70, max: 89, level: '比较划算', cls: 'b', emoji: '✅',
+      desc: '整体而言上大学对你利大于弊，虽然有些小不满，但仍是稳妥的选择。' },
+    { min: 50, max: 69, level: '勉强回本', cls: 'c', emoji: '⚖️',
+      desc: '收益与代价大致相抵，可能偶尔后悔，但文凭的敲门砖作用让你还算平衡。' },
+    { min: 30, max: 49, level: '不太划算', cls: 'd', emoji: '⚠️',
+      desc: '你大概率能在大学外找到更高效或更快乐的成长路径，上大学的机会成本偏高。' },
+    { min: 0, max: 29, level: '血亏警告', cls: 'e', emoji: '🚨',
+      desc: '对你来说，四年大学更像一笔消耗青春和金钱的亏本买卖，认真考虑其他出路或许更明智。' },
+  ];
+
+  let answers = new Array(TOTAL).fill(-1);
+  let current = 0;  // 0 = intro, 1..TOTAL = question, TOTAL+1 = result
+  let phaseShowing = 'intro';  // 'intro' | 'quiz' | 'result'
+
+  const app = document.getElementById('app');
+
+  function getResult(index) {
+    for (const r of resultLevels) {
+      if (index >= r.min && index <= r.max) return r;
+    }
+    return resultLevels[resultLevels.length - 1];
+  }
+
+  function calcIndex() {
+    const total = answers.reduce((sum, s) => sum + (s >= 0 ? s : 0), 0);
+    return Math.round((total / MAX_SCORE) * 100);
+  }
+
+  /* ── Render ── */
+  function render() {
+    if (phaseShowing === 'intro') return renderIntro();
+    if (phaseShowing === 'quiz') return renderQuiz();
+    if (phaseShowing === 'result') return renderResult();
+  }
+
+  function renderIntro() {
+    app.innerHTML = `
+      <div class="card intro fade-enter">
+        <div class="header">
+          <span class="icon">🎓</span>
+          <h1>上大学投资回报率测试</h1>
+          <p class="subtitle">你上大学到底值不值？</p>
+        </div>
+        <p class="desc">
+          本测试包含 <strong>${TOTAL} 道选择题</strong>，请根据你的真实想法或情况选择最接近的选项。<br>
+          最终的评估反映了就读大学对你个人的划算程度。
+        </p>
+        <div class="meta">
+          <span class="meta-item">📝 ${TOTAL} 题</span>
+          <span class="meta-item">⏱ 约 3 分钟</span>
+          <span class="meta-item">🔒 结果不公开</span>
+        </div>
+        <button class="btn btn-start" id="btnStart">开始测试</button>
+      </div>
+    `;
+    document.getElementById('btnStart').addEventListener('click', () => {
+      phaseShowing = 'quiz';
+      current = 1;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  function renderQuiz() {
+    const idx = current - 1; // 0-based
+    const q = questions[idx];
+    const selected = answers[idx];
+    const progressPct = Math.round((current / TOTAL) * 100);
+
+    let optionsHTML = q.options.map((opt, oi) => {
+      const sel = selected === opt.score ? ' selected' : '';
+      return `
+        <div class="option${sel}" data-score="${opt.score}">
+          <span class="letter">${opt.letter}</span>
+          <span class="label">${opt.text}</span>
+          <span class="radio"></span>
+        </div>`;
+    }).join('');
+
+    app.innerHTML = `
+      <div class="card fade-enter">
+        <div class="progress-wrap">
+          <div class="progress-info">
+            <span>第 ${current} / ${TOTAL} 题</span>
+            <span>${progressPct}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${progressPct}%"></div>
+          </div>
+        </div>
+        <div class="question-text">${q.q}</div>
+        <div class="options">${optionsHTML}</div>
+        <div class="nav">
+          <button class="btn btn-prev" id="btnPrev"${current === 1 ? ' disabled' : ''}>← 上一题</button>
+          <button class="btn btn-next" id="btnNext"${selected < 0 ? ' disabled' : ''}>
+            ${current === TOTAL ? '查看结果' : '下一题 →'}
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Bind option clicks
+    document.querySelectorAll('.option').forEach(el => {
+      el.addEventListener('click', function() {
+        const score = parseInt(this.dataset.score);
+        answers[idx] = score;
+        renderQuiz(); // re-render to show selection + enable next
+      });
+    });
+
+    // Bind nav
+    document.getElementById('btnPrev').addEventListener('click', () => {
+      if (current > 1) { current--; renderQuiz(); }
+    });
+    document.getElementById('btnNext').addEventListener('click', () => {
+      if (selected < 0) return;
+      if (current === TOTAL) {
+        phaseShowing = 'result';
+        render();
+      } else {
+        current++;
+        renderQuiz();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  function renderResult() {
+    const index = calcIndex();
+    const result = getResult(index);
+
+    app.innerHTML = `
+      <div class="card result fade-enter">
+        <div class="header">
+          <span class="icon">${result.emoji}</span>
+          <h1>你的大学性价比评估</h1>
+        </div>
+        <div class="level level-${result.cls}">${result.level}</div>
+        <p class="verdict">${result.desc}</p>
+        <button class="btn btn-restart" id="btnRestart">
+          ↻ 重新测试
+        </button>
+      </div>
+    `;
+
+    document.getElementById('btnRestart').addEventListener('click', () => {
+      answers = new Array(TOTAL).fill(-1);
+      current = 0;
+      phaseShowing = 'intro';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // ── Boot ──
+  render();
+
+})();
+</script>
+
+</body>
+</html>
